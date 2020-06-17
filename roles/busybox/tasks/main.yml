@@ -8,23 +8,19 @@
         name: 'busybox'
         namespace: '{{ meta.namespace }}'
       spec:
+        replicas: "{{size}}"
+        selector:
+          matchLabels:
+            app: busybox
         template:
           metadata:
             labels:
-              name: busybox
-          spec:
+              app: busybox
+          spec:    
             containers:
-              - name: helloworld
-                image: "busybox:1.28"
-        replicas: "{{size}}"
-        selector:
-          name: busybox
-        strategy:
-          type: Rolling
-          rollingParams:
-            pre:
-              failurePolicy: Abort
-              execNewPod:
-                containerName: helloworld
-                command: ['sh', '-c', 'echo Hello from Busbox! ; sleep 600']
+            - name: busybox
+              image: "busybox:1.28"
+              command: ['sh','-c','echo Hello from busbox with {{env_type}} ; sleep 600']  
+
+  
           
