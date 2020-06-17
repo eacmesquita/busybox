@@ -28,7 +28,7 @@ spec:
             readOnly: true
         - name: operator
           # Replace this with the built image name
-          image: quay.io/eacmesquita96/busybox:v0.1
+          image: quay.io/eacmesquita96/busybox-conditional:v0.1
           imagePullPolicy: Always
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner

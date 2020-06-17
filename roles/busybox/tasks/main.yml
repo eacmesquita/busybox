@@ -1,26 +1,8 @@
 ---
-- name: start busybox
-  k8s:
-    definition:
-      kind: DeploymentConfig
-      apiVersion: apps.openshift.io/v1
-      metadata:
-        name: 'busybox'
-        namespace: '{{ meta.namespace }}'
-      spec:
-        replicas: "{{size}}"
-        selector:
-          matchLabels:
-            app: busybox
-        template:
-          metadata:
-            labels:
-              app: busybox
-          spec:    
-            containers:
-            - name: busybox
-              image: "busybox:1.28"
-              command: ['sh','-c','echo Hello from busbox with {{env_type}} ; sleep 600']  
+- include_tasks: cm_var.yaml
+  when: env_type == "configmap"
+- include_tasks: secret_var.yaml
+  when: env_type == 'secret' 
 
   
           
