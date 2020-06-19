@@ -4,4 +4,5 @@ metadata:
   name: example-busybox
 spec:
   # Add fields here
-  size: 3
+  size: 1
+  env_type: "secret"

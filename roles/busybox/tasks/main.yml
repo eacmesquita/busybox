@@ -1,5 +1,5 @@
 ---
-- name: start busybox
+- name: start busybox with configmap
   k8s:
     definition:
       kind: DeploymentConfig
@@ -16,6 +16,12 @@
             containers:
               - name: helloworld
                 image: "busybox:1.28"
+                env:
+                  - name: CM_VAR
+                    valueFrom:
+                      configMapKeyRef:
+                        name: myconfigmap
+                        key: myvariable
         replicas: "{{size}}"
         selector:
           name: busybox
@@ -26,5 +32,41 @@
               failurePolicy: Abort
               execNewPod:
                 containerName: helloworld
-                command: ['sh', '-c', 'echo Hello from Busbox! ; sleep 600']
-          
+                command: ['sh','-c','echo ${CM_VAR} ; sleep 600']
+  when: env_type == "configmap"
+
+- name: start busybox with secret
+  k8s:
+    definition:
+      kind: DeploymentConfig
+      apiVersion: apps.openshift.io/v1
+      metadata:
+        name: 'busybox'
+        namespace: '{{ meta.namespace }}'
+      spec:
+        template:
+          metadata:
+            labels:
+              name: busybox
+          spec:
+            containers:
+              - name: helloworld
+                image: "busybox:1.28"
+                env:
+                  - name: SECRET_VAR
+                    valueFrom:
+                      secretKeyRef:
+                         name: mysecret
+                         key: myvariable
+        replicas: "{{size}}"
+        selector:
+          name: busybox
+        strategy:
+          type: Rolling
+          rollingParams:
+            pre:
+              failurePolicy: Abort
+              execNewPod:
+                containerName: helloworld
+                command: ['sh', '-c', 'echo ${SECRET_VAR} ; sleep 600']
+  when: env_type == "secret"            
